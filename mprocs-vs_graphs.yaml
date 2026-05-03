@@ -1,0 +1,20 @@
+procs:
+  IS_graph:
+    shell: 'bash -c "source install/setup.bash && ros2 launch is_graphs is_graph_launch.py wait_odom_to_map_tf:=false"'
+    autostart: false
+
+  carta_rt:
+    shell: 'bash -c "source install/setup.bash && ros2 launch carta carta_rt.launch.py"'
+    autostart: false
+
+  navigator_hl:
+    shell: 'bash -c "source install/setup.bash && ros2 launch navigator navigator_hl.launch.py map_source:=voxblox_skeletonizer sgraph_source:=vs_graphs"'
+    autostart: false
+
+  navigator_sgraphs:
+    shell: 'bash -c "source install/setup.bash && ros2 launch navigator navigator_sgraphs.launch.py sgraph_source:=vs_graphs"'
+    autostart: false
+
+  rviz:
+    shell: 'bash -c "source install/setup.bash && rviz2 -d src/snav_ros2/rviz_cfgs/planning.rviz"'
+    autostart: false
