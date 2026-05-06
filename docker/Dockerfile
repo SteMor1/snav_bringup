@@ -7,7 +7,8 @@ ENV CUDA_HOME=/usr/local/cuda \
     LANG=en_US.UTF-8 \
     LC_ALL=en_US.UTF-8 \
     ROS_DISTRO=jazzy \
-    PIP_BREAK_SYSTEM_PACKAGES=1
+    PIP_BREAK_SYSTEM_PACKAGES=1\
+    MAKEFLAGS='-j4'
 
 # --- Fix MPI issue ---
 RUN mkdir -p /opt/hpcx/ompi/lib/x86_64-linux-gnu \
@@ -75,15 +76,16 @@ RUN apt-get update && apt-get install -y \
 RUN pip install vcstool
 
 WORKDIR /workspace/src
-RUN --mount=type=ssh git clone git@github.com:snt-arg/snav_bringup.git -b main 
+RUN --mount=type=ssh git clone git@github.com:SteMor1/snav_bringup.git -b dev-ste 
+COPY packages.repos snav_bringup/packages.repos
 RUN --mount=type=ssh vcs import < snav_bringup/packages.repos
 # Install dependencies
 WORKDIR /workspace/
 RUN rosdep install --from-paths src --ignore-src -r -y
 
 # Compile ws
-RUN source /opt/ros/$ROS_DISTRO/setup.bash && \
-    colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
+RUN  source /opt/ros/$ROS_DISTRO/setup.bash && \
+    colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-skip spot_bringup --parallel-workers 2
 
 
 WORKDIR /dependencies
